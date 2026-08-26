@@ -1,0 +1,55 @@
+-- 1. location 
+CREATE TABLE location (
+    location_id INTEGER PRIMARY KEY,
+    location_name VARCHAR(30)
+);
+
+-- 2. Staff 
+CREATE TABLE Staff (
+    staff_id INTEGER PRIMARY KEY,
+    staff_name VARCHAR(20) NOT NULL,
+    location_id INTEGER NOT NULL,
+    address VARCHAR(100),
+    FOREIGN KEY (location_id) REFERENCES location(location_id)
+);
+
+-- 3. Product_type
+CREATE TABLE Product_type (
+    type_id INTEGER PRIMARY KEY,
+    category VARCHAR(20) NOT NULL,
+    type VARCHAR(20) NOT NULL
+);
+
+-- 4. Product 
+CREATE TABLE Product (
+    product_id INTEGER PRIMARY KEY,
+    product_name VARCHAR(20) NOT NULL,
+    description VARCHAR(150),
+    price NUMERIC(10,2) NOT NULL CHECK (price > 0),
+    type_id INTEGER NOT NULL,
+    FOREIGN KEY (type_id) REFERENCES Product_type(type_id)
+);
+
+-- 5. Sales_transaction
+CREATE TABLE Sales_transaction (
+    transaction_id INTEGER PRIMARY KEY,
+    transaction_timestamp TIMESTAMPTZ NOT NULL,  
+    staff_id INTEGER	NOT NULL,
+    location_id INTEGER,
+    payment_method VARCHAR(20) NOT NULL,
+    total_amount NUMERIC(10,2) NOT NULL	CHECK (total_amount >= 0),
+    FOREIGN KEY (location_id) REFERENCES location(location_id),
+    FOREIGN KEY (staff_id) REFERENCES Staff(staff_id)
+);
+
+-- 6. Sales_detail 
+CREATE TABLE Sales_detail (
+    transaction_id INTEGER NOT NULL,
+    product_id INTEGER NOT NULL,
+    quantity INTEGER NOT NULL CHECK (quantity > 0),
+    unit_price NUMERIC(10,2) NOT NULL CHECK (unit_price > 0),
+    line_number INTEGER NOT NULL,
+    PRIMARY KEY (transaction_id, line_number),
+    FOREIGN KEY (transaction_id) REFERENCES Sales_transaction(transaction_id),
+    FOREIGN KEY (product_id) REFERENCES Product(product_id)
+);
